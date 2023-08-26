@@ -1,0 +1,55 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Card {
+  id                         Int    @id @default(autoincrement())
+  name                       String
+  type_id                    Int?
+  card_type_id               Int
+  main_guardian_type_id      Int?
+  secondary_guardian_type_id Int?
+  level                      Int?
+  atk                        Int?
+  def                        Int?
+  password                   Int?
+  star_chip_cost             Int?
+  fmr_number                 Int
+
+  type                    Type?          @relation(fields: [type_id], references: [id])
+  card_type               CardType       @relation(fields: [card_type_id], references: [id])
+  main_guardian_type      GuardianStars? @relation("main_guardian_type", fields: [main_guardian_type_id], references: [id])
+  secondary_guardian_type GuardianStars? @relation("secondary_guardian_type", fields: [secondary_guardian_type_id], references: [id])
+}
+
+model CardType {
+  id   Int    @id @default(autoincrement())
+  name String
+
+  Card Card[]
+}
+
+model GuardianStars {
+  id            Int    @id @default(autoincrement())
+  name          String
+  strongAgainst String
+  weakAgainst   String
+
+  main_guardian_type      Card[] @relation("main_guardian_type")
+  secondary_guardian_type Card[] @relation("secondary_guardian_type")
+}
+
+model Type {
+  id   Int    @id @default(autoincrement())
+  name String
+
+  Card Card[]
+}
