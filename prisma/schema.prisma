@@ -25,10 +25,11 @@ model Card {
   fmr_number                 Int
   image                      String?
 
-  type                    Type?          @relation(fields: [type_id], references: [id])
-  card_type               CardType       @relation(fields: [card_type_id], references: [id])
-  main_guardian_type      GuardianStars? @relation("main_guardian_type", fields: [main_guardian_type_id], references: [id])
-  secondary_guardian_type GuardianStars? @relation("secondary_guardian_type", fields: [secondary_guardian_type_id], references: [id])
+  type                    Type?           @relation(fields: [type_id], references: [id])
+  card_type               CardType        @relation(fields: [card_type_id], references: [id])
+  main_guardian_type      GuardianStars?  @relation("main_guardian_type", fields: [main_guardian_type_id], references: [id])
+  secondary_guardian_type GuardianStars?  @relation("secondary_guardian_type", fields: [secondary_guardian_type_id], references: [id])
+  duelists_cards          DuelistsCards[]
 }
 
 model CardType {
@@ -53,4 +54,23 @@ model Type {
   name String
 
   Card Card[]
+}
+
+model Duelists {
+  id   Int    @id @default(autoincrement())
+  name String
+
+  DuelistsCards DuelistsCards[]
+}
+
+model DuelistsCards {
+  id         String @id @default(cuid())
+  rank       String
+  rankType   String
+  dropChance Float
+  cardId     Int
+  duelistId  Int
+
+  duelist Duelists @relation(fields: [duelistId], references: [id])
+  card    Card     @relation(fields: [cardId], references: [id])
 }

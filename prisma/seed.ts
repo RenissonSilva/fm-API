@@ -108,6 +108,54 @@ async function main() {
     //     })
     // }
 
+    // const duelists = [
+    //     'Simon Muran',
+    //     'Teana',
+    //     'Jono',
+    //     'Villaguer 1',
+    //     'Villaguer 2',
+    //     'Villaguer 3',
+    //     'Seto',
+    //     'Heishin',
+    //     'Rex Raptor',
+    //     'Weevil Underwood',
+    //     'Mai Valentine',
+    //     'Bandit Keith',
+    //     'Shadi',
+    //     'Yami Bakura',
+    //     'Pegasus',
+    //     'Isis',
+    //     'Kaiba',
+    //     'Mage Soldier',
+    //     'Teana 2nd',
+    //     'Jono 2nd',
+    //     'Ocean Mage',
+    //     'High Mage Secmeton',
+    //     'Forest Mage',
+    //     'High Mage Anubisius',
+    //     'Mountain Mage',
+    //     'High Mage Atenza',
+    //     'Desert Mage',
+    //     'High Mage Martis',
+    //     'Meadow Mage',
+    //     'High Mage Kepura',
+    //     'Labyrinth Mage',
+    //     'Seto 2nd',
+    //     'Guardian Sebek',
+    //     'Guardian Neku',
+    //     'Heishin 2nd',
+    //     'Seto 3rd',
+    //     'Darknite',
+    //     'Nitemare',
+    //     'Duel Master K',
+    // ];
+
+    // for await (const duelist of duelists) {
+    //     await prisma.duelists.create({
+    //         data: { name: duelist }
+    //     })
+    // }
+
 }
 main()
   .then(async () => {
