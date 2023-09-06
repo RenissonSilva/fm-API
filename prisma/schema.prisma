@@ -6,7 +6,7 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "mysql"
   url      = env("DATABASE_URL")
 }
 
@@ -21,8 +21,8 @@ model Card {
   atk                        Int?
   def                        Int?
   password                   String?
-  star_chip_cost             Int?
-  fmr_number                 Int
+  star_chip_cost             Float?
+  fmr_number                 String
   image                      String?
 
   type                    Type?           @relation(fields: [type_id], references: [id])

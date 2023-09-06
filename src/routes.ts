@@ -30,7 +30,7 @@ export async function appRoutes(app: FastifyInstance) {
                 await prisma.card.create({
                     data: {
                       name: element[2],
-                      fmr_number: parseInt(element[3]),
+                      fmr_number: element[3],
                       card_type_id: card_type[0].id,
                       password: element[4],
                       image: `https://images.ygoprodeck.com/images/cards/${element[4]}.jpg`
@@ -44,10 +44,10 @@ export async function appRoutes(app: FastifyInstance) {
                 await prisma.card.create({
                     data: {
                       name: element[2],
-                      fmr_number: parseInt(element[3], 10),
+                      fmr_number: element[3],
                       card_type_id: card_type[0].id,
                       password: element[4],
-                      star_chip_cost: parseInt(element[5], 10),
+                      star_chip_cost: parseFloat((element[5]).replace('.', '')),
                       image: `https://images.ygoprodeck.com/images/cards/${element[4]}.jpg`
                     }
                 })
@@ -67,7 +67,7 @@ export async function appRoutes(app: FastifyInstance) {
                       main_guardian_type_id: mainGuardianStar[0].id,
                       secondary_guardian_type_id: secondaryGuardianStar[0].id,
                       level: parseInt(element[8]),
-                      fmr_number: parseInt(element[5], 10),
+                      fmr_number: element[5],
                       card_type_id: card_type[0].id,
                       type_id: type[0].id,
                       password: element[9],
@@ -90,11 +90,11 @@ export async function appRoutes(app: FastifyInstance) {
                       main_guardian_type_id: mainGuardianStar[0].id,
                       secondary_guardian_type_id: secondaryGuardianStar[0].id,
                       level: parseInt(element[8]),
-                      fmr_number: parseInt(element[5], 10),
+                      fmr_number: element[5],
                       card_type_id: card_type[0].id,
                       type_id: type[0].id,
                       password: element[9],
-                      star_chip_cost: parseInt(element[10], 10),
+                      star_chip_cost: parseFloat((element[10]).replace('.', '')),
                       image: `https://images.ygoprodeck.com/images/cards/${element[9]}.jpg`
                     }
                 })
@@ -103,6 +103,58 @@ export async function appRoutes(app: FastifyInstance) {
             })
           });
         })();
+
+        return 1;
+    })
+
+  app.get('/csv-to-bd-duelists-cards', async (request) => {
+        const cards = await prisma.card.findMany();
+
+        // const duelistscards = await prisma.duelistsCards.deleteMany()
+        let id_do_duelista = 0;
+
+        (() => {
+            const csvFilePath = path.resolve(__dirname, '../saa.csv');
+          
+            const fileContent = fs.readFileSync(csvFilePath, { encoding: 'utf-8' });
+          
+            parse(fileContent, {
+              delimiter: ',',
+              relax_column_count: true
+            }, async (error, result) => {
+              if (error) {
+                console.error(error);
+              }
+              
+              
+              result.forEach(async (arr) => {
+                if(arr[0].includes("S-POW")) {
+                  id_do_duelista++
+                  
+                  console.log('id_do_duelista', id_do_duelista)
+                } else if(id_do_duelista < 38){
+                  console.log('id_do_duelista', id_do_duelista)
+                  if(typeof cards.find(x => x.fmr_number == arr?.[0])?.id == 'number'){
+                    let card_id = cards.find(x => x.fmr_number == arr?.[0])?.id;
+                    // console.log('card_id', card_id)
+                    if(card_id) {
+                      await prisma.duelistsCards.create({
+                          data: {
+                            rank: 'S',
+                            rankType: 'POW',
+                            dropChance: parseFloat(arr[1]),
+                            cardId: card_id,
+                            duelistId: id_do_duelista
+                          }
+                      })
+                    }
+                  }
+
+                }
+              })
+
+          });
+        });
 
         return 1;
     })
