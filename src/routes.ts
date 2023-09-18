@@ -107,13 +107,31 @@ export async function appRoutes(app: FastifyInstance) {
         return 1;
     })
 
-  app.get('/csv-to-bd-duelists-cards', async (request) => {
+    app.get('/csv-to-bd-duelists-cards', async (request) => {
         const cards = await prisma.card.findMany();
 
-        // const duelistscards = await prisma.duelistsCards.deleteMany()
         let id_do_duelista = 0;
 
-        (() => {
+        const jsonA = {
+          "0": "S-POW",
+          "1": "A-POW"
+        }
+
+        const jsonB = {
+          "0": "B-POW",
+          "1": "C-POW",
+          "2": "D-POW",
+          "3": "D-TEC",
+          "4": "C-TEC",
+          "5": "B-TEC",
+        }
+
+        const jsonC = {
+          "0": "S-TEC",
+          "1": "A-TEC"
+        }
+
+        const insertDuelistCardsSAPOW = () => {
             const csvFilePath = path.resolve(__dirname, '../saa.csv');
           
             const fileContent = fs.readFileSync(csvFilePath, { encoding: 'utf-8' });
@@ -131,22 +149,21 @@ export async function appRoutes(app: FastifyInstance) {
                 if(arr[0].includes("S-POW")) {
                   id_do_duelista++
                   
-                  console.log('id_do_duelista', id_do_duelista)
                 } else if(id_do_duelista < 38){
-                  console.log('id_do_duelista', id_do_duelista)
+
                   if(typeof cards.find(x => x.fmr_number == arr?.[0])?.id == 'number'){
                     let card_id = cards.find(x => x.fmr_number == arr?.[0])?.id;
-                    // console.log('card_id', card_id)
+
                     if(card_id) {
                       await prisma.duelistsCards.create({
                           data: {
-                            rank: 'S',
-                            rankType: 'POW',
                             dropChance: parseFloat(arr[1]),
                             cardId: card_id,
-                            duelistId: id_do_duelista
+                            duelistId: id_do_duelista,
+                            ranks: jsonA
                           }
-                      })
+                      });
+
                     }
                   }
 
@@ -154,7 +171,94 @@ export async function appRoutes(app: FastifyInstance) {
               })
 
           });
+        };
+
+        const insertDuelistCardsBCD = () => {
+          const csvFilePath = path.resolve(__dirname, '../bcc.csv');
+        
+          const fileContent = fs.readFileSync(csvFilePath, { encoding: 'utf-8' });
+        
+          parse(fileContent, {
+            delimiter: ',',
+            relax_column_count: true
+          }, async (error, result) => {
+            if (error) {
+              console.error(error);
+            }
+            
+            
+            result.forEach(async (arr) => {
+              if(arr[0].includes("B-POW")) {
+                id_do_duelista++
+                
+              } else if(id_do_duelista < 38){
+
+                if(typeof cards.find(x => x.fmr_number == arr?.[0])?.id == 'number'){
+                  let card_id = cards.find(x => x.fmr_number == arr?.[0])?.id;
+
+                  if(card_id) {
+                    await prisma.duelistsCards.create({
+                        data: {
+                          dropChance: parseFloat(arr[1]),
+                          cardId: card_id,
+                          duelistId: id_do_duelista,
+                          ranks: jsonB
+                        }
+                    });
+
+                  }
+                }
+
+              }
+            })
+          });
+        };
+
+        const insertDuelistCardsSATEC = () => {
+          const csvFilePath = path.resolve(__dirname, '../ass.csv');
+        
+          const fileContent = fs.readFileSync(csvFilePath, { encoding: 'utf-8' });
+        
+          parse(fileContent, {
+            delimiter: ',',
+            relax_column_count: true
+          }, async (error, result) => {
+            if (error) {
+              console.error(error);
+            }
+            
+            
+            result.forEach(async (arr) => {
+              if(arr[0].includes("S-TEC")) {
+                id_do_duelista++
+                
+              } else if(id_do_duelista < 38){
+
+                if(typeof cards.find(x => x.fmr_number == arr?.[0])?.id == 'number'){
+                  let card_id = cards.find(x => x.fmr_number == arr?.[0])?.id;
+
+                  if(card_id) {
+                    await prisma.duelistsCards.create({
+                        data: {
+                          dropChance: parseFloat(arr[1]),
+                          cardId: card_id,
+                          duelistId: id_do_duelista,
+                          ranks: jsonC
+                        }
+                    });
+
+                  }
+                }
+
+              }
+            })
+
         });
+        };
+
+        insertDuelistCardsSAPOW();
+        insertDuelistCardsBCD();
+        insertDuelistCardsSATEC();
 
         return 1;
     })

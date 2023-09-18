@@ -156,6 +156,24 @@ async function main() {
         })
     }
 
+    const ranks = [
+        'S-POW',
+        'A-POW',
+        'B-POW',
+        'C-POW',
+        'D-POW',
+        'S-TEC',
+        'A-TEC',
+        'B-TEC',
+        'C-TEC',
+        'D-TEC',
+    ];
+
+    for await (const rank of ranks) {
+        await prisma.ranks.create({
+            data: { name: rank }
+        })
+    }
 }
 main()
   .then(async () => {

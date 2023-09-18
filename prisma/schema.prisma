@@ -36,7 +36,7 @@ model CardType {
   id   Int    @id @default(autoincrement())
   name String
 
-  Card Card[]
+  card Card[]
 }
 
 model GuardianStars {
@@ -53,23 +53,22 @@ model Type {
   id   Int    @id @default(autoincrement())
   name String
 
-  Card Card[]
+  card Card[]
 }
 
 model Duelists {
   id   Int    @id @default(autoincrement())
   name String
 
-  DuelistsCards DuelistsCards[]
+  duelistsCards DuelistsCards[]
 }
 
 model DuelistsCards {
-  id         String @id @default(cuid())
-  rank       String
-  rankType   String
+  id         Int   @id @default(autoincrement())
   dropChance Float
   cardId     Int
   duelistId  Int
+  ranks      Json?
 
   duelist Duelists @relation(fields: [duelistId], references: [id])
   card    Card     @relation(fields: [cardId], references: [id])
